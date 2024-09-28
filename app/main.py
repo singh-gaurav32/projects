@@ -15,6 +15,9 @@ def match_pattern(input_line, pattern):
         return is_alpha_numeric
     if pattern[0] == "[" and pattern[-1] == "]":
         chars = pattern[1:-1]
+        if chars[0] == "^":
+            neg_chars = chars[1:]
+            return not any(char in input_line for char in chars)
         is_character_group = any(char in input_line for char in chars)
         return is_character_group
     else:
