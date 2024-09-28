@@ -13,6 +13,10 @@ def match_pattern(input_line, pattern):
     if pattern == "\\w":
         is_alpha_numeric = all(char.isalnum() for char in input_line)
         return is_alpha_numeric
+    if pattern[0] == "[" and pattern[-1] == "]":
+        chars = pattern[1:-1]
+        is_character_group = any(char in input_line for char in chars)
+        return is_character_group
     else:
         raise RuntimeError(f"Unhandled pattern: {pattern}")
 
