@@ -2,26 +2,32 @@ import sys
 
 # import pyparsing - available if you need it!
 # import lark - available if you need it!
+class Pattern:
+    DIGIT = "\\d"
+    ALNUM = "\\w"
 
 
 def match_pattern(input_line, pattern):
-    if len(pattern) == 1:
-        return pattern in input_line
-    if pattern == "\\d":
-        do_digits_exists = any(char.isdigit() for char in input_line)
-        return do_digits_exists
-    if pattern == "\\w":
-        is_alpha_numeric = all(char.isalnum() for char in input_line)
-        return is_alpha_numeric
-    if pattern[0] == "[" and pattern[-1] == "]":
+    if not pattern:
+        return True
+    if not input_line:
+        return False
+    if pattern[0] == input_line[0]:
+        return match_pattern(input_line[1:],pattern[1:])
+    elif pattern[:2] == Pattern.DIGIT:
+        if input_line[0].isdigit():
+            return match_pattern(input_line[1:],pattern[2:])
+    elif pattern[:2] == Pattern.ALNUM:
+        if input_line[0].isalnum():
+            return match_pattern(input_line[1:],pattern[2:])
+    elif pattern[0] == "[" and pattern[-1] == "]":
         chars = pattern[1:-1]
         if chars[0] == "^":
             neg_chars = chars[1:]
             return not any(char in input_line for char in chars)
-        is_character_group = any(char in input_line for char in chars)
-        return is_character_group
-    else:
-        raise RuntimeError(f"Unhandled pattern: {pattern}")
+        return any(char in input_line for char in chars)
+    return match_pattern(input_line[1:],pattern)
+
 
 
 def main():
@@ -34,13 +40,12 @@ def main():
 
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
-
     # Uncomment this block to pass the first stage
-    if match_pattern(input_line, pattern):
+    is_matched = match_pattern(input_line,pattern)
+    print(f"is_matched: {is_matched}")
+    if is_matched:
         exit(0)
-    else:
-        exit(1)
-
+    exit(1)
 
 if __name__ == "__main__":
     main()
